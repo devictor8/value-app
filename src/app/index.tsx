@@ -2,25 +2,35 @@ import {
   Text,
   View,
   StyleSheet,
-  TextInput,
   StatusBar,
   ImageBackground,
   Button,
+  Touchable,
+  Image,
+  Pressable,
 } from "react-native";
 import { StaticTextField } from "../components/StaticTextFieldProps";
 import { Pad } from "../components/Pad";
 import { useState } from "react";
 
 export default function HomeScreen() {
-  const [currentCurrency, setCurrentCurrency] = useState("");
-  const [targetCurrency, setTargetCurrency] = useState("");
+  const [currentCurrency, setCurrentCurrency] = useState<currency>({
+    countryCode: "br",
+    input: "",
+    value: 0,
+  });
+  const [targetCurrency, setTargetCurrency] = useState<currency>({
+    countryCode: "us",
+    input: "",
+    value: 0,
+  });
 
   const onClickCharacter = (char: string) => {
-    setCurrentCurrency((prev) => prev + char);
+    setCurrentCurrency((prev) => ({ ...prev, input: prev.input + char }));
   };
 
   const onBackSpace = () => {
-    setCurrentCurrency((prev) => prev.slice(0, -1));
+    setCurrentCurrency((prev) => ({ ...prev, input: prev.input.slice(0, -1) }));
   };
 
   return (
@@ -33,8 +43,30 @@ export default function HomeScreen() {
         <Text style={styles.pageTitle}>Value APP</Text>
         <View style={styles.currencyContainer}>
           <Text style={styles.title}>Escolha a moeda</Text>
-          <StaticTextField value={currentCurrency} />
-          <StaticTextField value={targetCurrency} />
+          <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+            <Pressable>
+              <Image
+                source={{
+                  uri: `https://flagcdn.com/120x90/${currentCurrency.countryCode.toLocaleLowerCase()}.png`,
+                }}
+                width={80}
+                height={60}
+              />
+            </Pressable>
+            <StaticTextField value={currentCurrency.input} />
+          </View>
+          <View style={{ display: "flex", flexDirection: "row", gap: 10 }}>
+            <Pressable>
+              <Image
+                source={{
+                  uri: `https://flagcdn.com/120x90/${targetCurrency.countryCode.toLocaleLowerCase()}.png`,
+                }}
+                width={80}
+                height={60}
+              />
+            </Pressable>
+            <StaticTextField value={targetCurrency.input} />
+          </View>
           <Button title="Converter"></Button>
         </View>
       </ImageBackground>
