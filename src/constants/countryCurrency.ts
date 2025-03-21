@@ -1,4 +1,4 @@
-export const countryCurrency = {
+export const countryCurrency: { [key: string]: string } = {
   ad: "EUR",
   ae: "AED",
   af: "AFN",

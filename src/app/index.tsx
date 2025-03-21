@@ -11,9 +11,12 @@ import {
 } from "react-native";
 import { StaticTextField } from "../components/StaticTextFieldProps";
 import { Pad } from "../components/Pad";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { api } from "../lib";
+import { countryCurrency } from "../constants/countryCurrency";
 
 export default function HomeScreen() {
+  const apiKey = process.env.API_KEY;
   const [currentCurrency, setCurrentCurrency] = useState<currency>({
     countryCode: "br",
     input: "",
@@ -32,6 +35,25 @@ export default function HomeScreen() {
   const onBackSpace = () => {
     setCurrentCurrency((prev) => ({ ...prev, input: prev.input.slice(0, -1) }));
   };
+
+  const currencyConverter = () => {
+    const currency =
+      countryCurrency[currentCurrency.countryCode].toLocaleLowerCase();
+    const target =
+      countryCurrency[targetCurrency.countryCode].toLocaleLowerCase();
+
+    api.get(`${countryCurrency[currency]}.json`).then((response) => {
+      console.log(response.data);
+      setTargetCurrency((prev) => ({
+        ...prev,
+        input: response.data[currency][target],
+      }));
+    });
+  };
+
+  useEffect(() => {
+    currencyConverter();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -67,7 +89,7 @@ export default function HomeScreen() {
             </Pressable>
             <StaticTextField value={targetCurrency.input} />
           </View>
-          <Button title="Converter"></Button>
+          <Button onPress={currencyConverter} title="Converter"></Button>
         </View>
       </ImageBackground>
       <Pad onBackSpace={onBackSpace} onClickCharacter={onClickCharacter} />
